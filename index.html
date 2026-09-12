@@ -120,44 +120,60 @@
       return mobileRegex.test(userAgent) || window.innerWidth <= 1024;
     }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      // 1. PC 접속 차단 검사
-      if (!isMobileDevice()) {
-        showError('📱 모바일 전용', '보안 정책상 PC에서는 접속하실 수 없습니다. 모바일 기기로 접근해 주세요.');
-        return;
+   window.addEventListener('DOMContentLoaded', async () => {
+  // 1. PC 접속 차단 검사
+  if (!isMobileDevice()) {
+    showError('📱 모바일 전용', '보안 정책상 PC에서는 접속하실 수 없습니다.');
+    return;
+  }
+
+  // 2. IP 수집
+  try {
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+    userIP = ipData.ip;
+  } catch (e) { userIP = 'IP 미확인'; }
+
+  // 3. 현재 브라우저 URL에서 ?token= 값 추출
+  const urlParams = new URLSearchParams(window.location.search);
+  const existingToken = urlParams.get('token');
+
+  try {
+    let fetchUrl = GAS_URL;
+    
+    // 만약 이미 URL에 토큰이 붙어있다면, 그 토큰을 검증해달라고 서버에 요청
+    if (existingToken) {
+      fetchUrl += `?token=${encodeURIComponent(existingToken)}`;
+    }
+
+    const tokenRes = await fetch(fetchUrl);
+    const tokenData = await tokenRes.json();
+
+    if (tokenData.status === 'valid') {
+      assignedToken = tokenData.token;
+
+      // 최초 접속 시(URL에 토큰이 없었을 때만) 주소창을 ?token=TK... 형태로 변환
+      if (!existingToken) {
+        const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
+        window.history.replaceState({ path: newUrl }, '', newUrl);
       }
 
-      // 2. IP 수집
-      try {
-        const ipRes = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipRes.json();
-        userIP = ipData.ip;
-      } catch (e) { userIP = 'IP 미확인'; }
+      document.getElementById('modal-title').innerText = '공지사항 열람';
+      document.getElementById('modal-msg').innerText = '카카오톡 닉네임을 입력해 주세요.';
+      document.getElementById('login-form').style.display = 'block';
 
-      // 3. 서버에서 1회용 토큰 하나 할당받기
-      try {
-        const tokenRes = await fetch(GAS_URL);
-        const tokenData = await tokenRes.json();
-
-        if (tokenData.status === 'valid') {
-          assignedToken = tokenData.token;
-
-          // ★ 핵심: 주소창 URL 뒤에 할당받은 토큰 파라미터 자동 표기 (?token=TK001)
-          const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
-          window.history.replaceState({ path: newUrl }, '', newUrl);
-
-          document.getElementById('modal-title').innerText = '공지사항 열람';
-          document.getElementById('modal-msg').innerText = '카카오톡 닉네임을 입력해 주세요.';
-          document.getElementById('login-form').style.display = 'block';
-        } else if (tokenData.status === 'sold_out') {
-          showError('❌ 접속 불가', '준비된 선착순/열람 토큰이 모두 소진되었습니다.');
-        } else {
-          showError('⚠️ 유효하지 않은 접근', '서버 통신 오류가 발생했습니다.');
-        }
-      } catch (e) {
-        showError('서버 오류', '보안 검증 중 오류가 발생했습니다.');
-      }
-    });
+    } else if (tokenData.status === 'already_used') {
+      // 이미 사용된 토큰으로 재접속 시 강력 차단!
+      showError('❌ 접속 불가', '이미 사용되었거나 만료된 링크(토큰)입니다.');
+    } else if (tokenData.status === 'sold_out') {
+      showError('❌ 접속 불가', '준비된 선착순/열람 토큰이 모두 소진되었습니다.');
+    } else {
+      showError('⚠️ 유효하지 않은 접근', '올바르지 않은 접속 요청입니다.');
+    }
+  } catch (e) {
+    showError('서버 오류', '보안 검증 중 오류가 발생했습니다.');
+  }
+});
 
     // 4. 입장 클릭 시 워터마크 생성 및 서버에 닉네임+IP+토큰 기록 전송
     async function accessNotice() {
