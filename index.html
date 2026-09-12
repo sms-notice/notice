@@ -547,7 +547,7 @@
           // 워터마크에 접속자 정보 렌더링
           const now = new Date();
           const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-          const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
+          const watermarkText = `${nickname} (${userIP}, ${timeStr})`;
           const wmContainer = document.getElementById('watermark-layer');
 
           for (let i = 0; i < 220; i++) {
