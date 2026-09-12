@@ -181,7 +181,7 @@
   <!-- 보안 검증 / 닉네임 입력 모달 -->
   <div id="overlay">
     <div class="modal-box" id="modal-box">
-      <h2 id="modal-title">🛡️ 보안 검증 중</h2>
+      <h2 id="modal-title">🛡️ 수맛세 보안 검증</h2>
       <div id="loading-spinner" class="spinner"></div>
       <p id="modal-msg">접속 환경을 확인하고 있습니다.</p>
       <div id="login-form" style="display:none;">
@@ -498,7 +498,7 @@
             window.history.replaceState({ path: newUrl }, '', newUrl);
           }
 
-          document.getElementById('modal-title').innerText = '🛡️ 수맛세 보안 인증';
+          document.getElementById('modal-title').innerText = '🛡️ 수맛세 회원 인증';
           document.getElementById('loading-spinner').style.display = 'none'; // 스피너 숨기기
           document.getElementById('modal-msg').innerText = '등록된 카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
