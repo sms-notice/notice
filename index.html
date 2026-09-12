@@ -2,197 +2,132 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>공지사항</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>보안 공지사항</title>
+
+  <!-- 1. 카카오톡 인앱 브라우저 감지 시 외부 브라우저(크롬/사파리)로 자동 이탈 -->
+  <script>
+    (function redirectToExternalBrowser() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isKakaoTalk = userAgent.includes('kakaotalk');
+
+      if (isKakaoTalk) {
+        const currentUrl = location.href;
+        if (userAgent.includes('android')) {
+          location.href = 'intent://' + currentUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+          location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+        }
+      }
+    })();
+  </script>
+
   <style>
-    /* 기본 리셋 및 모바일 레이아웃 설정 */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none; /* 무단 드래그/복사 방지 */
-      -webkit-user-select: none;
-    }
-    body, html {
-      width: 100%;
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #f5f5f7;
-      color: #1d1d1f;
-      overflow-x: hidden;
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8f9fa;
+      user-select: none; -webkit-user-select: none;
     }
 
-    /* 워터마크 레이어 */
-    #watermark-layer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      align-content: space-around;
-      overflow: hidden;
-      opacity: 0.15;
-    }
-    .wm-item {
-      font-size: 22px;
-      color: #000;
-      transform: rotate(-20deg);
-      padding: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-    }
-
-    /* 검증/인증 모달 오버레이 */
     #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      z-index: 10000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .modal-card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 340px;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-    .modal-card h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #1d1d1f;
-    }
-    .modal-card p {
-      font-size: 14px;
-      color: #6e6e73;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-    .modal-card input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d2d2d7;
-      border-radius: 10px;
-      font-size: 15px;
-      margin-bottom: 12px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .modal-card input:focus {
-      border-color: #0071e3;
-    }
-    .modal-card button {
-      width: 100%;
-      padding: 12px;
-      background-color: #0071e3;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .modal-card button:disabled {
-      background-color: #a1a1a6;
-      cursor: not-allowed;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 10000; text-align: center;
     }
 
-    /* 공지사항 본문 컨테이너 (인증 후 표시) */
+    .box {
+      background: #fff; padding: 30px; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 320px; width: 90%;
+    }
+
+    .box input {
+      width: 100%; padding: 12px; margin: 15px 0;
+      border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px;
+    }
+
+    .box button {
+      width: 100%; padding: 12px; background: #007bff; color: white;
+      border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer;
+    }
+
+    .box button:disabled {
+      background: #ccc; cursor: not-allowed;
+    }
+
     #content-container {
-      display: none;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px 16px 60px 16px;
-      background-color: #ffffff;
-      min-height: 100vh;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      display: none; max-width: 600px; margin: 40px auto; padding: 25px;
+      background: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: relative; z-index: 10;
     }
-    .notice-header {
-      border-bottom: 2px solid #1d1d1f;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
+
+    /* 동적 워터마크 레이어 */
+    #watermark-layer {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 999; overflow: hidden;
+      display: flex; flex-wrap: wrap; 
+      justify-content: center;
+      align-content: center;
+      opacity: 0.18;
     }
-    .notice-header h1 {
-      font-size: 22px;
-      color: #1d1d1f;
-    }
-    .notice-body {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #333333;
-    }
-    .notice-body p {
-      margin-bottom: 14px;
+
+    .wm-item {
+      transform: rotate(-30deg);
+      font-size: 18px;
+      font-weight: 800;
+      color: #000;
+      padding: 20px 15px;
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
 
-  <!-- 워터마크 레이어 -->
-  <div id="watermark-layer"></div>
-
-  <!-- 검증 및 닉네임 입력 모달 -->
+  <!-- 상태 안내 및 닉네임 입력 레이어 -->
   <div id="overlay">
-    <div class="modal-card">
-      <h2 id="modal-title">접속 확인 중...</h2>
-      <p id="modal-msg">보안 정책을 확인하는 중입니다.</p>
-      
-      <div id="login-form" style="display: none;">
-        <input type="text" id="nickname-input" placeholder="카카오톡 닉네임 입력" autocomplete="off" />
-        <button onclick="accessNotice()">입장하기</button>
+    <div class="box" id="modal-box">
+      <h2 id="modal-title">보안 검증 중...</h2>
+      <p id="modal-msg">접속 환경을 확인하고 있습니다.</p>
+      <div id="login-form" style="display:none;">
+        <input type="text" id="nickname-input" placeholder="카카오톡 닉네임 입력" autocomplete="off">
+        <button id="submit-btn" onclick="accessNotice()">입장하기</button>
       </div>
     </div>
   </div>
 
-  <!-- 실제 공지사항 콘텐츠 -->
+  <!-- 동적 워터마크 레이어 -->
+  <div id="watermark-layer"></div>
+
+  <!-- 공지사항 본문 내용 -->
   <div id="content-container">
-    <div class="notice-header">
-      <h1>📢 중요 공지사항</h1>
-    </div>
-    <div class="notice-body">
-      <p>안녕하세요, 멤버 여러분.</p>
-      <p>본 페이지는 지정된 인원만 열람 가능한 보안 공지사항입니다.</p>
-      <p>화면에 표시된 워터마크에는 열람자의 닉네임, IP, 열람 일시가 포함되어 있으므로 무단 캡처 및 외부 유출을 금지합니다.</p>
-      <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;" />
-      <p><strong>[공지 내용]</strong></p>
-      <p>여기에 실제 안내하고자 하는 공지사항 본문 내용을 작성해 주시면 됩니다.</p>
-    </div>
+    <h2>📢 [회원 전용] 필수 확인 공지사항</h2>
+    <hr>
+    <p>본 페이지는 인가된 회원만 볼 수 있는 보안 공지사항입니다.</p>
+    <p><strong>[주의]</strong> 무단 캡처 및 유출 시 배경에 도배된 워터마크와 기록된 IP/닉네임을 통해 유출자가 추적됩니다.</p>
+    <br>
+    <ul>
+      <li>공지 내용 외부 공유 및 캡처 절대 금지</li>
+      <li>무단 유출 적발 시 경고 없이 강퇴 조치</li>
+    </ul>
   </div>
 
   <script>
-    // ⚠️ 배포된 구글 앱스 스크립트(GAS) 웹 앱 URL을 입력해 주세요.
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz830ivK1-KM280C68CziUsjbtC0_NE47F7XtN_XYBkB-sl5GpfgwaR2RHcK_O7yOUY/exec";
-
-    let userIP = 'IP 미확인';
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbywiHZOdWAZ15de7UvnYISVLk6Jo_MwCfwa66OBkE28Nk64Px6WVJneQ-VqQFo-cAdb/exec"; // 복사한 구글 웹 앱 URL 입력
+    let userIP = 'IP 조회 실패';
     let assignedToken = '';
 
-    // 모바일 기기 접속 여부 확인 함수
+    // 모바일 접속 판별
     function isMobileDevice() {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
       return mobileRegex.test(userAgent) || window.innerWidth <= 1024;
     }
 
-    // 페이지 로드 시 초기 검증 실행
     window.addEventListener('DOMContentLoaded', async () => {
       // 1. PC 접속 차단
       if (!isMobileDevice()) {
-        showError('📱 모바일 전용', '보안 정책상 PC 환경에서는 접속할 수 없습니다. 모바일 기기로 접속해 주세요.');
+        showError('📱 모바일 전용', '보안 정책상 PC에서는 접속하실 수 없습니다. 모바일 기기로 접근해 주세요.');
         return;
       }
 
@@ -201,18 +136,16 @@
         const ipRes = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipRes.json();
         userIP = ipData.ip;
-      } catch (e) {
-        userIP = 'IP 미확인';
-      }
+      } catch (e) { userIP = 'IP 미확인'; }
 
-      // 3. URL 파라미터 확인 (?token=...)
+      // 3. URL의 ?token= 존재 여부 체크
       const urlParams = new URLSearchParams(window.location.search);
       const existingToken = urlParams.get('token');
 
       try {
         let fetchUrl = GAS_URL;
         if (existingToken) {
-          fetchUrl += `?token=${encodeURIComponent(existingToken)}`;
+          fetchUrl += (GAS_URL.includes('?') ? '&' : '?') + `token=${encodeURIComponent(existingToken)}`;
         }
 
         const tokenRes = await fetch(fetchUrl);
@@ -221,41 +154,46 @@
         if (tokenData.status === 'valid') {
           assignedToken = tokenData.token;
 
-          // 💡 수정됨: 토큰을 미리 발급받되, URL은 변경하지 않고 닉네임 입력 폼만 띄움
+          // 최초 접속 시 URL에 토큰 표기 (?token=TK...)
+          if (!existingToken) {
+            const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+          }
+
           document.getElementById('modal-title').innerText = '공지사항 열람';
           document.getElementById('modal-msg').innerText = '등록된 카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
 
         } else if (tokenData.status === 'already_used') {
-          showError('❌ 접속 불가', '이미 사용되었거나 만료된 링크(토큰)입니다.');
+          showError('❌ 접속 불가', '이미 사용되었거나 만료된 링크입니다.');
         } else if (tokenData.status === 'sold_out') {
-          showError('❌ 접속 불가', '준비된 선착순/열람 토큰이 모두 소진되었습니다.');
+          showError('❌ 접속 불가', '준비된 열람 토큰이 모두 소진되었습니다.');
         } else {
-          showError('⚠️ 유효하지 않은 접근', '올바르지 않은 접속 요청입니다.');
+          showError('⚠️ 접속 오류', tokenData.message || '유효하지 않은 요청입니다.');
         }
       } catch (e) {
-        showError('서버 오류', '보안 검증 중 오류가 발생했습니다.');
+        showError('서버 오류', '보안 검증 통신 중 오류가 발생했습니다.');
       }
     });
 
-    // 입장하기 버튼 클릭 시 닉네임 검증 요청
+    // 입장하기 버튼 클릭 로직
     async function accessNotice() {
       const nicknameInput = document.getElementById('nickname-input');
       const nickname = nicknameInput.value.trim();
 
       if (!nickname) {
-        alert('닉네임을 입력해야 입장할 수 있습니다.');
+        alert('닉네임을 입력해 주세요.');
         return;
       }
 
-      const btn = document.querySelector('#login-form button');
+      const btn = document.getElementById('submit-btn');
       btn.disabled = true;
       btn.innerText = '검증 중...';
 
       try {
         const response = await fetch(GAS_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain' }, // CORS 에러 방지용 text/plain
           body: JSON.stringify({
             nickname: nickname,
             ip: userIP,
@@ -266,21 +204,17 @@
         const result = await response.json();
 
         if (result.status === 'success') {
-          // 💡 핵심: 닉네임 검증 성공 시점에만 URL 주소 뒤에 토큰을 추가합니다.
-          const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
-          window.history.replaceState({ path: newUrl }, '', newUrl);
-
-          // 모달 닫기 및 컨텐츠 표시
+          // 명단 확인 완료 ➔ 공지사항 오픈
           document.getElementById('overlay').style.display = 'none';
           document.getElementById('content-container').style.display = 'block';
 
-          // 화면 전체 워터마크 생성
+          // 워터마크 생성
           const now = new Date();
-          const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-          const watermarkText = `${nickname} (${userIP}, ${timeStr})`;
+          const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+          const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
           const wmContainer = document.getElementById('watermark-layer');
 
-          for (let i = 0; i < 80; i++) {
+          for (let i = 0; i < 100; i++) {
             const div = document.createElement('div');
             div.className = 'wm-item';
             div.innerText = watermarkText;
@@ -291,23 +225,33 @@
           btn.disabled = false;
           btn.innerText = '입장하기';
         } else {
-          alert('⚠️ 오류가 발생했습니다: ' + (result.message || '다시 시도해 주세요.'));
+          alert('⚠️ 오류: ' + (result.message || '다시 시도해 주세요.'));
           btn.disabled = false;
           btn.innerText = '입장하기';
         }
       } catch (e) {
-        alert('서버 통신 중 오류가 발생했습니다.');
+        alert('서버 통신 오류가 발생했습니다.');
         btn.disabled = false;
         btn.innerText = '입장하기';
       }
     }
 
-    // 에러 표시 메시지 헬퍼 함수
     function showError(title, msg) {
       document.getElementById('modal-title').innerText = title;
       document.getElementById('modal-msg').innerText = msg;
       document.getElementById('login-form').style.display = 'none';
     }
+
+    // 우클릭 및 단축키 차단
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || 
+          (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) ||
+          (e.ctrlKey && e.key === 'u') ||
+          e.key === 'PrintScreen') {
+        e.preventDefault();
+      }
+    });
   </script>
 </body>
 </html>
