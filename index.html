@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>보안 공지사항</title>
+  <title>✨ 수맛세 공식 규칙 및 공지사항</title>
 
   <!-- 카카오톡 인앱 브라우저 감지 시 외부 브라우저(크롬/사파리)로 자동 이탈 -->
   <script>
@@ -23,66 +23,144 @@
   </script>
 
   <style>
+    :root {
+      --bg-color: #121214;
+      --card-bg: #1e1e24;
+      --text-main: #f1f1f3;
+      --text-sub: #a1a1aa;
+      --accent-color: #3b82f6;
+      --warning-color: #ef4444;
+      --border-color: #27272a;
+    }
+
     body {
       margin: 0; padding: 0;
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #f8f9fa;
-      user-select: none; -webkit-user-select: none;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      line-height: 1.6;
     }
 
+    /* 보안 검증 / 닉네임 입력 모달 레이어 */
     #overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.98);
+      background: rgba(18, 18, 20, 0.96);
       display: flex; justify-content: center; align-items: center;
-      z-index: 10000; text-align: center;
+      z-index: 10000; text-align: center; padding: 20px; box-sizing: border-box;
     }
 
-    .box {
-      background: #fff; padding: 30px; border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 320px; width: 90%;
+    .modal-box {
+      background: var(--card-bg); padding: 30px 25px; border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 340px; width: 100%;
+      border: 1px solid var(--border-color);
     }
 
-    .box input {
-      width: 100%; padding: 12px; margin: 15px 0;
-      border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px;
+    .modal-box h2 { margin-top: 0; font-size: 20px; color: #fff; }
+    .modal-box p { font-size: 14px; color: var(--text-sub); }
+
+    .modal-box input {
+      width: 100%; padding: 14px; margin: 15px 0;
+      background: #121214; border: 1px solid var(--border-color);
+      color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 15px;
+      text-align: center; outline: none;
     }
 
-    .box button {
-      width: 100%; padding: 12px; background: #007bff; color: white;
-      border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer;
-    }
+    .modal-box input:focus { border-color: var(--accent-color); }
 
-    .box button:disabled {
-      background: #ccc; cursor: not-allowed;
+    .modal-box button {
+      width: 100%; padding: 14px; background: var(--accent-color); color: white;
+      border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
     }
+    .modal-box button:active { background: #2563eb; }
+    .modal-box button:disabled { background: #52525b; cursor: not-allowed; }
 
-    #content-container {
-      display: none; max-width: 600px; margin: 40px auto; padding: 25px;
-      background: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      position: relative; z-index: 10;
-    }
-
+    /* 동적 워터마크 레이어 */
     #watermark-layer {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       pointer-events: none; z-index: 999; overflow: hidden;
-      display: flex; flex-wrap: wrap; 
-      justify-content: center; align-content: center;
-      opacity: 0.18;
+      display: flex; flex-wrap: wrap; justify-content: center; align-content: center;
+      opacity: 0.12;
     }
 
     .wm-item {
       transform: rotate(-30deg);
-      font-size: 18px; font-weight: 800; color: #000;
-      padding: 20px 15px; white-space: nowrap;
+      font-size: 16px; font-weight: 800; color: #ffffff;
+      padding: 25px 20px; white-space: nowrap;
     }
+
+    /* 본문 공지사항 컨테이너 */
+    #content-container {
+      display: none; max-width: 680px; margin: 0 auto; padding: 25px 20px 60px 20px;
+      position: relative; z-index: 10;
+    }
+
+    .header-card {
+      background: linear-gradient(135deg, #1e3a8a, #1e1e24);
+      border: 1px solid #2563eb; padding: 24px; border-radius: 16px;
+      text-align: center; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(37,99,235,0.15);
+    }
+    .header-card h1 { margin: 0 0 8px 0; font-size: 22px; color: #fff; }
+    .header-card p { margin: 0; font-size: 13px; color: #93c5fd; }
+
+    /* 경고 배너 */
+    .warning-banner {
+      background: rgba(239, 68, 68, 0.1); border: 1px solid var(--warning-color);
+      padding: 14px 16px; border-radius: 10px; color: #fca5a5; font-size: 13px;
+      margin-bottom: 24px; text-align: center; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* 섹션 카드 스타일 */
+    .section-card {
+      background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: 14px; padding: 20px; margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 17px; font-weight: bold; color: #fff;
+      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .sub-section {
+      margin-bottom: 16px;
+    }
+    .sub-section:last-child { margin-bottom: 0; }
+
+    .sub-title {
+      font-size: 14px; font-weight: bold; color: #e4e4e7; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    ul { margin: 0; padding-left: 20px; font-size: 13.5px; color: var(--text-sub); }
+    li { margin-bottom: 6px; }
+    li::marker { color: var(--accent-color); }
+
+    .highlight { color: #f87171; font-weight: 600; }
+    .link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #27272a; color: #93c5fd; padding: 8px 14px;
+      border-radius: 8px; text-decoration: none; font-size: 13px; margin-top: 8px; border: 1px solid #3f3f46;
+      font-weight: 500; transition: background 0.2s;
+    }
+    .link-btn:hover { background: #3f3f46; }
+
+    .footer-msg {
+      background: #18181b; border: 1px dashed var(--border-color);
+      padding: 20px; border-radius: 14px; font-size: 13px; color: var(--text-sub);
+      text-align: center; margin-top: 30px; line-height: 1.7;
+    }
+    .footer-msg strong { color: #fff; }
   </style>
 </head>
 <body>
 
-  <!-- 안내 및 닉네임 입력 레이어 -->
+  <!-- 보안 검증 / 닉네임 입력 모달 -->
   <div id="overlay">
-    <div class="box" id="modal-box">
-      <h2 id="modal-title">보안 검증 중...</h2>
+    <div class="modal-box" id="modal-box">
+      <h2 id="modal-title">🛡️ 보안 검증 중</h2>
       <p id="modal-msg">접속 환경을 확인하고 있습니다.</p>
       <div id="login-form" style="display:none;">
         <input type="text" id="nickname-input" placeholder="카카오톡 닉네임 입력" autocomplete="off">
@@ -96,15 +174,239 @@
 
   <!-- 공지사항 본문 -->
   <div id="content-container">
-    <h2>📢 [회원 전용] 필수 확인 공지사항</h2>
-    <hr>
-    <p>본 페이지는 인가된 회원만 볼 수 있는 보안 공지사항입니다.</p>
-    <p><strong>[주의]</strong> 무단 캡처 및 유출 시 배경에 도배된 워터마크와 기록된 IP/닉네임을 통해 유출자가 추적됩니다.</p>
-    <br>
-    <ul>
-      <li>공지 내용 외부 공유 및 캡처 절대 금지</li>
-      <li>무단 유출 적발 시 경고 없이 강퇴 조치</li>
-    </ul>
+    
+    <div class="header-card">
+      <h1>✨ 수맛세 공식 규칙 및 공지사항</h1>
+      <p>Update: 26/09/14 ∙ 필수 숙지 사항</p>
+    </div>
+
+    <!-- 캡처 및 무단복사 경고 문구 -->
+    <div class="warning-banner">
+      <span>🚨</span> 본 페이지의 캡처, 녹화 및 무단 복사·외부 유출 시 시스템에 기록된 정보(IP·기기정보)를 바탕으로 즉시 강제 조치됩니다.
+    </div>
+
+    <!-- 1️⃣ 채팅 규칙 -->
+    <div class="section-card">
+      <div class="section-title">💬 1️⃣ 채팅 규칙</div>
+      
+      <div class="sub-section">
+        <div class="sub-title">🗣️ 1-1) 채팅 예절</div>
+        <ul>
+          <li>존댓말 사용 필수 (농담 및 장난은 OK)</li>
+          <li>욕설 및 비속어 사용 시 경고</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🗑️ 1-2) 자삭(자기삭제) 금지</div>
+        <ul>
+          <li>업로드 후 삭제 금지</li>
+          <li>삭제 필요 시 운영진에게 ‘가리기 요청’ (개인정보 노출 등 긴급 상황 제외)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🏷️ 1-3) 닉네임</div>
+        <ul>
+          <li>닉네임 변경 불가 (월말/분기내 변경 1회 가능, 변경 후 운영진에게 고지)</li>
+          <li>기본 카카오 캐릭터 닉네임 금지 (ex. 프로도, 제이지 등)</li>
+          <li>2글자 이상 권장</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">👋 1-4) 신입 환영</div>
+        <ul>
+          <li>신입 입장 시 기존 대화 중단 후 환영</li>
+          <li>수맛세 양식 작성 완료 전까지 대화 잠시 대기</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🔔 1-5) 알림 설정</div>
+        <ul>
+          <li>새벽 알림 방지를 위해 보이스룸 알림 해제 권장</li>
+          <li>설정 &gt; 알림 &gt; 보이스룸알림 OFF</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🔒 1-6) 프로필 보안</div>
+        <ul>
+          <li>오픈프로필 비번 설정 의무화 (연속/동일 숫자, 생일 금지)</li>
+          <li>비번 설정 방법 : 본인 프로필 클릭 - 상단 점점점 - 프로필 편집 - 연결된 채팅방 관리 - 참여코드 on</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">📸 1-7) 인스타 공유 금지</div>
+        <ul>
+          <li>단톡방 내 인스타 아이디 및 인스타 릴스, 스토리 공유 전면 금지</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2️⃣ 친목 관련 규칙 -->
+    <div class="section-card">
+      <div class="section-title">🤝 2️⃣ 친목 관련 규칙</div>
+      
+      <div class="sub-section">
+        <div class="sub-title">👥 2-1) 개별 단톡 금지</div>
+        <ul>
+          <li>수맛세 회원 3인 이상 포함된 단체톡방 생성 및 활동 금지</li>
+          <li>부득이하게 꼭 필요한 경우 운영진 1인 필수 초대</li>
+          <li>단체톡방 활동 및 운영진 초대 미이행 적발 시 <span class="highlight">즉시 강퇴</span></li>
+          <li>수맛세 회원이 포함된 타톡방이 겹칠 경우 사실을 알게 된 즉시 공유</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">⚠️ 2-2) 목적 외 활동 금지</div>
+        <ul>
+          <li>이성 교류(여미새, 남미새) 목적 참여 발각 시 <span class="highlight">즉시 강퇴</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">📵 2-3) 개인 연락 금지</div>
+        <ul>
+          <li>연락처 및 오픈톡 비밀번호, 인스타 공유 금지</li>
+          <li>회원 개인 문의 : 개별 대화가 필요한 경우 '운영진방'에 입장 후 문의</li>
+          <li>음성 통화 필요 시 : 개인 전화 대신 운영진방 내 '보이스룸' 이용</li>
+          <li>부득이한 연락처 공유 및 연락 : 운영진 또는 채팅방 내 즉시 공유 필수</li>
+          <li>불필요한 개인 연락 누적, 적발 시 <span class="highlight">강퇴</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🚪 2-4) 타방 초대 금지</div>
+        <ul>
+          <li>수맛세 회원을 타 단톡방으로 초대하는 행위 금지</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3️⃣ 벙 관련 규칙 -->
+    <div class="section-card">
+      <div class="section-title">🎉 3️⃣ 벙 관련 규칙</div>
+      
+      <div class="sub-section">
+        <div class="sub-title">📅 3-1) 일정 조율</div>
+        <ul>
+          <li>모든 벙 조율은 단톡방/보이스룸에서만 진행 (끼리끼리 방지)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🙋‍♂️ 3-2) 벙 진행</div>
+        <ul>
+          <li>3인 이상 모일 시 벙 필수 등록</li>
+          <li>벙 참석 인정 기준 3인 이상만 인정 (30분 이상 참석 시 인정, 얼비 참석 인정 불가)</li>
+          <li>참석 시 투표 필수 (투표가 끝났을 경우 댓글로 작성)</li>
+          <li>게스트 동반 시 인원수 및 관계 기입 필수 (ex: 친구 1명, 여자친구, 기존회원은 닉네임 작성)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🚗 3-3) 이동 공유</div>
+        <ul>
+          <li>2, 3차 장소 이동 시 댓글 또는 채팅방에 실시간 공유</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🧽 3-4) 세차벙 에티켓</div>
+        <ul>
+          <li>타인 차량 전체 세차해주기 금지. 2회차 참여부터는 개인 용품 지참 필수</li>
+          <li>세차 미참여(얼비참) 3인 이상 시 별도 카페벙 진행 후 세차팀과 합류 권장</li>
+          <li>세차벙 참석 시 댓글로 참여 형태(세차 / 얼비참 / 세차도우미) 명시 필수</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🏠 3-5) 무사 복귀 확인</div>
+        <ul>
+          <li>모든 벙 종료 후 귀가 시 톡방에 '무사 복귀(무복)' 채팅 필수</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">📋 3-6) 벙주의 의무</div>
+        <ul>
+          <li>벙 종료 후 투표 명단과 실제 참석 명단이 다를 경우 반드시 운영진에게 공유</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4️⃣ 활동 및 강퇴 규정 -->
+    <div class="section-card">
+      <div class="section-title">⚖️ 4️⃣ 활동 및 강퇴 규정</div>
+      
+      <div class="sub-section">
+        <div class="sub-title">⛺ 4-1) 벙</div>
+        <ul>
+          <li>기존회원 : 분기별 벙 1회 이상 미참석 시 <span class="highlight">강퇴</span></li>
+          <li>신입회원 : 가입 30일 내 오프라인 벙 미참석 시 <span class="highlight">강퇴</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">💬 4-2) 채팅</div>
+        <ul>
+          <li>주 50회 미만 시 누적 관리 (매주 월요일 0시 리셋, 하루 최대 20회 인정)</li>
+          <li>채팅 부족 경고 2회 누적 시 <span class="highlight">강퇴</span></li>
+          <li>채팅횟수 만족시에도 채팅 패턴 체크, 부적절 판단시 경고 후 <span class="highlight">강퇴</span> (채팅 전체 체크)</li>
+          <li>개인사정으로 채팅 불가능시 운영진에게 공유시 예외처리</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">⚠️ 4-3) 규칙 위반</div>
+        <ul>
+          <li>규칙 위반 누적, 정원 초과 시 비활동 회원 우선 정리</li>
+          <li>운영진 필수 공유사항을 공유하지 않는 경우 경고 또는 <span class="highlight">강퇴</span></li>
+          <li>공지 및 정보, 대화, 일정 등을 수맛세 회원이 아닌 타인에게 전달시 <span class="highlight">즉시 강퇴</span></li>
+          <li>운영진 판단 하 부적절 활동회원 <span class="highlight">강퇴</span> (강퇴사유 전체 공지)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">🔄 4-5) 재입장</div>
+        <ul>
+          <li>미활동 강퇴자는 1개월 후 가능하나, 규칙 위반 강퇴자는 재입장 불가</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 5️⃣ 기타 -->
+    <div class="section-card">
+      <div class="section-title">📌 5️⃣ 기타</div>
+      
+      <div class="sub-section">
+        <div class="sub-title">🛠️ 5-1) 운영진방</div>
+        <ul>
+          <li>건의 및 문의 사항은 운영진방 이용 (채팅창에 "/운영진" 입력 시 이동 가능)</li>
+          <li>입장 코드 : <strong style="color:#fff;">0124</strong></li>
+        </ul>
+        <a href="https://open.kakao.com/o/g8foSSyh" target="_blank" class="link-btn">
+          💬 운영진방 바로가기
+        </a>
+      </div>
+
+      <div class="sub-section" style="margin-top: 18px;">
+        <div class="sub-title">🎁 5-2) 수맛세 스티커 나눔</div>
+        <ul>
+          <li>차량용 스티커 무료 나눔 (요청 시 정모 및 벙에서 증정)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 하단 당부 메시지 -->
+    <div class="footer-msg">
+      <p>💡 <strong>수맛세</strong>는 공동체 이탈 방지 및 불필요한 오해 방지를 위해 개인연락을 모두 금지하며, 모든 회원이 전체적으로 어울리고, 활동할 수 있는 방을 만들고자 정해진 규칙입니다.</p>
+      <p style="margin-top: 10px;">운영진에게 공유해야 할 정보는 당일 내로 꼭 공유해서 불이익을 받지 않도록 해주시고, 규칙을 잘 지켜 공유한 회원분이 난처한 상황이 생기지 않도록 모두가 잘 지켜주세요! :)</p>
+    </div>
+
   </div>
 
   <script>
@@ -173,7 +475,7 @@
             window.history.replaceState({ path: newUrl }, '', newUrl);
           }
 
-          document.getElementById('modal-title').innerText = '공지사항 열람';
+          document.getElementById('modal-title').innerText = '🛡️ 수맛세 보안 인증';
           document.getElementById('modal-msg').innerText = '등록된 카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
 
@@ -210,7 +512,7 @@
             nickname: nickname,
             ip: userIP,
             token: assignedToken,
-            device: getDeviceInfo() // 구글 시트 저장용 기기 정보 전달
+            device: getDeviceInfo()
           })
         });
 
@@ -220,13 +522,13 @@
           document.getElementById('overlay').style.display = 'none';
           document.getElementById('content-container').style.display = 'block';
 
-          // 워터마크에는 깔끔하게 닉네임, IP, 접속시간만 표시 (기기 정보 노출 X)
+          // 워터마크에 접속자 정보 렌더링 (배경 도배)
           const now = new Date();
           const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
           const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
           const wmContainer = document.getElementById('watermark-layer');
 
-          for (let i = 0; i < 100; i++) {
+          for (let i = 0; i < 120; i++) {
             const div = document.createElement('div');
             div.className = 'wm-item';
             div.innerText = watermarkText;
@@ -254,6 +556,7 @@
       document.getElementById('login-form').style.display = 'none';
     }
 
+    // 우클릭, 단축키 차단
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if (e.key === 'F12' || 
