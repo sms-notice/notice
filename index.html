@@ -3,32 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-  <script>
-  (function redirectToExternalBrowser() {
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isKakaoTalk = userAgent.includes('kakaotalk');
-
-    // 카카오톡 인앱 브라우저에서 접속한 경우에만 실행
-    if (isKakaoTalk) {
-      const currentUrl = location.href;
-
-      // 1. Android (크롬/기본 브라우저 강제 실행 Intent)
-      if (userAgent.includes('android')) {
-        const intentUrl = 'intent://' + currentUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-        location.href = intentUrl;
-      } 
-      // 2. iOS (Safari 강제 실행 Scheme)
-      else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
-        // kakaotalk://web/openExternal 스킴을 이용해 사파리로 강제 리다이렉트
-        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
-      }
-    }
-  })();
-</script>
-  
   <title>보안 공지사항</title>
+
+  <!-- 1. 카카오톡 인앱 브라우저 감지 시 외부 브라우저(크롬/사파리)로 즉시 강제 전환 -->
+  <script>
+    (function redirectToExternalBrowser() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isKakaoTalk = userAgent.includes('kakaotalk');
+
+      if (isKakaoTalk) {
+        const currentUrl = location.href;
+        if (userAgent.includes('android')) {
+          location.href = 'intent://' + currentUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+          location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+        }
+      }
+    })();
+  </script>
+
   <style>
     body {
       margin: 0; padding: 0;
@@ -76,7 +69,6 @@
       transform: rotate(-30deg); font-size: 15px; font-weight: bold; color: #000; padding: 25px; white-space: nowrap;
     }
   </style>
-
 </head>
 <body>
 
@@ -109,19 +101,12 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxpK8APuFJ2Ci8gOAuUoQvn9zSjWg2uyaDJUTHyMHcrFE_UO_OVMnC8ruw9TExzoT9n/exec"; // 복사한 구글 앱스 스크립트 URL로 교체
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxpK8APuFJ2Ci8gOAuUoQvn9zSjWg2uyaDJUTHyMHcrFE_UO_OVMnC8ruw9TExzoT9n/exec"; // 복사한 구글 앱스 스크립트 웹 앱 URL로 교체
     let userIP = 'IP 조회 실패';
     let currentToken = '';
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. 카카오톡 인앱 브라우저 체크
-      const ua = navigator.userAgent.toLowerCase();
-      if (!ua.includes('kakaotalk')) {
-        showError('⚠️ 접속 불가', '본 공지사항은 카카오톡 앱 내부에서만 열람 가능합니다.');
-        return;
-      }
-
-      // 2. URL 파라미터 추출 및 주소창 숨기기
+      // 1. URL 파라미터 추출 및 주소창 숨기기
       const urlParams = new URLSearchParams(window.location.search);
       currentToken = urlParams.get('token');
 
@@ -134,14 +119,14 @@
         return;
       }
 
-      // 3. Public IP 조회
+      // 2. Public IP 조회
       try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipRes.json();
         userIP = ipData.ip;
       } catch (e) { userIP = 'IP 미확인'; }
 
-      // 4. 구글 시트 1회용 토큰 검증
+      // 3. 구글 시트 1회용 토큰 검증
       try {
         const tokenRes = await fetch(`${GAS_URL}?token=${currentToken}`);
         const tokenData = await tokenRes.json();
@@ -160,7 +145,7 @@
       }
     });
 
-    // 5. 입장 시 워터마크 생성 & 구글 시트 저장
+    // 4. 입장 시 워터마크 생성 & 구글 시트 저장
     async function accessNotice() {
       const nickname = document.getElementById('nickname-input').value.trim();
       if (!nickname) {
@@ -199,7 +184,7 @@
       document.getElementById('login-form').style.display = 'none';
     }
 
-    // 6. 우클릭/F12/캡처키 차단
+    // 5. 우클릭/F12/캡처키 차단
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if (e.key === 'F12' || 
