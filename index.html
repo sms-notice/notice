@@ -51,6 +51,29 @@
       transform: rotate(-30deg); font-size: 15px; font-weight: bold; color: #000; padding: 25px; white-space: nowrap;
     }
   </style>
+
+  <script>
+  (function redirectToExternalBrowser() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isKakaoTalk = userAgent.includes('kakaotalk');
+
+    // 카카오톡 인앱 브라우저에서 접속한 경우에만 실행
+    if (isKakaoTalk) {
+      const currentUrl = location.href;
+
+      // 1. Android (크롬/기본 브라우저 강제 실행 Intent)
+      if (userAgent.includes('android')) {
+        const intentUrl = 'intent://' + currentUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        location.href = intentUrl;
+      } 
+      // 2. iOS (Safari 강제 실행 Scheme)
+      else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+        // kakaotalk://web/openExternal 스킴을 이용해 사파리로 강제 리다이렉트
+        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+      }
+    }
+  })();
+</script>
 </head>
 <body>
 
