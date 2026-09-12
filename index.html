@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>보안 공지사항</title>
 
-  
-  <!-- 카카오톡 인앱 브라우저에서 접속 시 크롬/사파리로 자동 이탈 -->
+  <!-- 1. 카카오톡 인앱 브라우저 감지 시 외부 브라우저(크롬/사파리)로 자동 이탈 -->
   <script>
     (function redirectToExternalBrowser() {
       const userAgent = navigator.userAgent.toLowerCase();
@@ -59,20 +58,22 @@
       position: relative; z-index: 10;
     }
 
-    /* 워터마크 레이어 */
+    /* 촘촘해진 동적 워터마크 레이어 */
     #watermark-layer {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       pointer-events: none; z-index: 999; overflow: hidden;
-      display: flex; flex-wrap: wrap; justify-content: space-around; align-content: space-around;
+      display: flex; flex-wrap: wrap; 
+      justify-content: center;
+      align-content: center;
       opacity: 0.18;
     }
 
     .wm-item {
-      transform: rotate(-30deg);
-      font-size: 22px;
+      transform: rotate(-20deg);
+      font-size: 18px;
       font-weight: 800;
       color: #000;
-      padding: 10px 5px;
+      padding: 15px; /* 간격을 촘촘하게 설정 */
       white-space: nowrap;
     }
   </style>
@@ -108,7 +109,7 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycby379jxojIDcMVkSFcgTDX5iQxtqD0kd45litiB5XEimTcYWTq99aqLF415RC_eZa3l/exec"; // 구글 앱스 스크립트 웹 앱 URL 입력
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby379jxojIDcMVkSFcgTDX5iQxtqD0kd45litiB5XEimTcYWTq99aqLF415RC_eZa3l/exec"; // 복사한 구글 앱스 스크립트 웹 앱 URL로 교체
     let userIP = 'IP 조회 실패';
     let assignedToken = '';
 
@@ -116,8 +117,6 @@
     function isMobileDevice() {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-      
-      // User-Agent 확인 또는 화면 너비가 1024px 이하인지 체크
       return mobileRegex.test(userAgent) || window.innerWidth <= 1024;
     }
 
@@ -125,7 +124,7 @@
       // 1. PC 접속 차단 검사
       if (!isMobileDevice()) {
         showError('📱 모바일 전용', '보안 정책상 PC에서는 접속하실 수 없습니다. 모바일 기기로 접근해 주세요.');
-        return; // PC 접속 시 토큰 수령 절차 차단
+        return;
       }
 
       // 2. IP 수집
@@ -135,13 +134,18 @@
         userIP = ipData.ip;
       } catch (e) { userIP = 'IP 미확인'; }
 
-      // 3. 서버에 남아있는 1회용 토큰 요청
+      // 3. 서버에서 1회용 토큰 하나 할당받기
       try {
         const tokenRes = await fetch(GAS_URL);
         const tokenData = await tokenRes.json();
 
         if (tokenData.status === 'valid') {
           assignedToken = tokenData.token;
+
+          // ★ 핵심: 주소창 URL 뒤에 할당받은 토큰 파라미터 자동 표기 (?token=TK001)
+          const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
+          window.history.replaceState({ path: newUrl }, '', newUrl);
+
           document.getElementById('modal-title').innerText = '공지사항 열람';
           document.getElementById('modal-msg').innerText = '카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
@@ -155,7 +159,7 @@
       }
     });
 
-    // 4. 입장 클릭 시 워터마크 생성 및 데이터 전송
+    // 4. 입장 클릭 시 워터마크 생성 및 서버에 닉네임+IP+토큰 기록 전송
     async function accessNotice() {
       const nickname = document.getElementById('nickname-input').value.trim();
       if (!nickname) {
@@ -166,20 +170,20 @@
       document.getElementById('overlay').style.display = 'none';
       document.getElementById('content-container').style.display = 'block';
 
-      // 워터마크 생성
+      // 워터마크 촘촘하게 도배 생성 (100개 반복)
       const now = new Date();
       const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-      const watermarkText = `${nickname} (${userIP}, ${timeStr})`;
+      const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
       const wmContainer = document.getElementById('watermark-layer');
 
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 100; i++) {
         const div = document.createElement('div');
         div.className = 'wm-item';
         div.innerText = watermarkText;
         wmContainer.appendChild(div);
       }
 
-      // 구글 시트에 기록 전송
+      // 구글 시트에 [시간 | 닉네임 | IP | 할당된 토큰] 저장
       fetch(GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
