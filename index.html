@@ -72,7 +72,7 @@
       font-size: 22px;
       font-weight: 800;
       color: #000;
-      padding: 5px
+      padding: 10px 5px;
       white-space: nowrap;
     }
   </style>
@@ -169,7 +169,7 @@
       // 워터마크 생성
       const now = new Date();
       const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-      const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
+      const watermarkText = `${nickname} (${userIP}, ${timeStr})`;
       const wmContainer = document.getElementById('watermark-layer');
 
       for (let i = 0; i < 40; i++) {
