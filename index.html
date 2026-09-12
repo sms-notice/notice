@@ -39,10 +39,10 @@
       opacity: 0.15;
     }
     .wm-item {
-      font-size: 12px;
+      font-size: 22px;
       color: #000;
-      transform: rotate(-25deg);
-      padding: 20px;
+      transform: rotate(-20deg);
+      padding: 10px;
       white-space: nowrap;
       font-weight: bold;
     }
@@ -176,8 +176,7 @@
 
   <script>
     // ⚠️ 배포된 구글 앱스 스크립트(GAS) 웹 앱 URL을 입력해 주세요.
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz830ivK1-KM280C68CziUsjbtC0_NE47F7XtN_XYBkB-sl5GpfgwaR2RHcK_O7yOUY/exec
-";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz830ivK1-KM280C68CziUsjbtC0_NE47F7XtN_XYBkB-sl5GpfgwaR2RHcK_O7yOUY/exec";
 
     let userIP = 'IP 미확인';
     let assignedToken = '';
@@ -222,12 +221,7 @@
         if (tokenData.status === 'valid') {
           assignedToken = tokenData.token;
 
-          // 최초 접속 시 URL에 토큰 주소 표시
-          if (!existingToken) {
-            const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
-            window.history.replaceState({ path: newUrl }, '', newUrl);
-          }
-
+          // 💡 수정됨: 토큰을 미리 발급받되, URL은 변경하지 않고 닉네임 입력 폼만 띄움
           document.getElementById('modal-title').innerText = '공지사항 열람';
           document.getElementById('modal-msg').innerText = '등록된 카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
@@ -272,14 +266,18 @@
         const result = await response.json();
 
         if (result.status === 'success') {
-          // 검증 성공 시 모달 닫기 및 콘텐츠 표시
+          // 💡 핵심: 닉네임 검증 성공 시점에만 URL 주소 뒤에 토큰을 추가합니다.
+          const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?token=${assignedToken}`;
+          window.history.replaceState({ path: newUrl }, '', newUrl);
+
+          // 모달 닫기 및 컨텐츠 표시
           document.getElementById('overlay').style.display = 'none';
           document.getElementById('content-container').style.display = 'block';
 
           // 화면 전체 워터마크 생성
           const now = new Date();
           const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-          const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
+          const watermarkText = `${nickname} (${userIP}, ${timeStr})`;
           const wmContainer = document.getElementById('watermark-layer');
 
           for (let i = 0; i < 80; i++) {
