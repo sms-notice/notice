@@ -39,7 +39,7 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
-      line-height: 1.6;
+      line-height: 1.45; /* 행간 조금 줄임 */
     }
 
     /* 보안 검증 / 닉네임 입력 모달 레이어 */
@@ -76,18 +76,33 @@
     .modal-box button:active { background: #2563eb; }
     .modal-box button:disabled { background: #52525b; cursor: not-allowed; }
 
-    /* 동적 워터마크 레이어 */
+    /* 움직이는 로딩바 (스피너) 스타일 */
+    .spinner {
+      width: 36px; height: 36px;
+      border: 4px solid rgba(59, 130, 246, 0.2);
+      border-top: 4px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 20px auto 10px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 동적 워터마크 레이어 (조금 더 크고 촘촘하게 수정) */
     #watermark-layer {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       pointer-events: none; z-index: 999; overflow: hidden;
       display: flex; flex-wrap: wrap; justify-content: center; align-content: center;
-      opacity: 0.12;
+      opacity: 0.14;
     }
 
     .wm-item {
       transform: rotate(-30deg);
-      font-size: 16px; font-weight: 800; color: #ffffff;
-      padding: 25px 20px; white-space: nowrap;
+      font-size: 18px; font-weight: 800; color: #ffffff;
+      padding: 18px 15px; white-space: nowrap;
     }
 
     /* 본문 공지사항 컨테이너 */
@@ -120,25 +135,27 @@
 
     .section-title {
       font-size: 17px; font-weight: bold; color: #fff;
-      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+      margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
       display: flex; align-items: center; gap: 8px;
     }
 
     .sub-section {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .sub-section:last-child { margin-bottom: 0; }
 
     .sub-title {
-      font-size: 14px; font-weight: bold; color: #e4e4e7; margin-bottom: 6px;
+      font-size: 14px; font-weight: bold; color: #e4e4e7; margin-bottom: 4px;
       display: flex; align-items: center; gap: 6px;
     }
 
     ul { margin: 0; padding-left: 20px; font-size: 13.5px; color: var(--text-sub); }
-    li { margin-bottom: 6px; }
+    li { margin-bottom: 4px; }
     li::marker { color: var(--accent-color); }
 
-    .highlight { color: #f87171; font-weight: 600; }
+    /* 붉은 글씨 대신 두껍게 강조 (강퇴 등) */
+    .highlight { color: #ffffff; font-weight: 800; }
+
     .link-btn {
       display: inline-flex; align-items: center; gap: 6px;
       background: #27272a; color: #93c5fd; padding: 8px 14px;
@@ -150,7 +167,7 @@
     .footer-msg {
       background: #18181b; border: 1px dashed var(--border-color);
       padding: 20px; border-radius: 14px; font-size: 13px; color: var(--text-sub);
-      text-align: center; margin-top: 30px; line-height: 1.7;
+      text-align: center; margin-top: 30px; line-height: 1.6;
     }
     .footer-msg strong { color: #fff; }
   </style>
@@ -161,6 +178,7 @@
   <div id="overlay">
     <div class="modal-box" id="modal-box">
       <h2 id="modal-title">🛡️ 보안 검증 중</h2>
+      <div id="loading-spinner" class="spinner"></div>
       <p id="modal-msg">접속 환경을 확인하고 있습니다.</p>
       <div id="login-form" style="display:none;">
         <input type="text" id="nickname-input" placeholder="카카오톡 닉네임 입력" autocomplete="off">
@@ -187,7 +205,7 @@
 
     <!-- 1️⃣ 채팅 규칙 -->
     <div class="section-card">
-      <div class="section-title">💬 1️⃣ 채팅 규칙</div>
+      <div class="section-title">💬 1. 채팅 규칙</div>
       
       <div class="sub-section">
         <div class="sub-title">🗣️ 1-1) 채팅 예절</div>
@@ -248,7 +266,7 @@
 
     <!-- 2️⃣ 친목 관련 규칙 -->
     <div class="section-card">
-      <div class="section-title">🤝 2️⃣ 친목 관련 규칙</div>
+      <div class="section-title">🤝 2. 친목 관련 규칙</div>
       
       <div class="sub-section">
         <div class="sub-title">👥 2-1) 개별 단톡 금지</div>
@@ -288,7 +306,7 @@
 
     <!-- 3️⃣ 벙 관련 규칙 -->
     <div class="section-card">
-      <div class="section-title">🎉 3️⃣ 벙 관련 규칙</div>
+      <div class="section-title">🎉 3. 벙 관련 규칙</div>
       
       <div class="sub-section">
         <div class="sub-title">📅 3-1) 일정 조율</div>
@@ -340,7 +358,7 @@
 
     <!-- 4️⃣ 활동 및 강퇴 규정 -->
     <div class="section-card">
-      <div class="section-title">⚖️ 4️⃣ 활동 및 강퇴 규정</div>
+      <div class="section-title">⚖️ 4. 활동 및 강퇴 규정</div>
       
       <div class="sub-section">
         <div class="sub-title">⛺ 4-1) 벙</div>
@@ -380,7 +398,7 @@
 
     <!-- 5️⃣ 기타 -->
     <div class="section-card">
-      <div class="section-title">📌 5️⃣ 기타</div>
+      <div class="section-title">📌 5. 기타</div>
       
       <div class="sub-section">
         <div class="sub-title">🛠️ 5-1) 운영진방</div>
@@ -410,7 +428,7 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz-_Aj5DJOB6K3auBD2te0DrdtynCRLTO6ZhoWQ0Js5l5jEWPA88LCG3IwFUQIEWyZq/exec"; // 본인의 구글 웹 앱 URL 입력
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // 본인의 구글 웹 앱 URL 입력
     let userIP = 'IP 조회 실패';
     let assignedToken = '';
 
@@ -476,6 +494,7 @@
           }
 
           document.getElementById('modal-title').innerText = '🛡️ 수맛세 보안 인증';
+          document.getElementById('loading-spinner').style.display = 'none'; // 스피너 숨기기
           document.getElementById('modal-msg').innerText = '등록된 카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
 
@@ -522,13 +541,13 @@
           document.getElementById('overlay').style.display = 'none';
           document.getElementById('content-container').style.display = 'block';
 
-          // 워터마크에 접속자 정보 렌더링 (배경 도배)
+          // 워터마크에 접속자 정보 렌더링 (더 크고 촘촘하게 도배)
           const now = new Date();
           const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
           const watermarkText = `${nickname} (${userIP} / ${timeStr})`;
           const wmContainer = document.getElementById('watermark-layer');
 
-          for (let i = 0; i < 120; i++) {
+          for (let i = 0; i < 180; i++) { // 개수 증가
             const div = document.createElement('div');
             div.className = 'wm-item';
             div.innerText = watermarkText;
@@ -552,6 +571,7 @@
 
     function showError(title, msg) {
       document.getElementById('modal-title').innerText = title;
+      document.getElementById('loading-spinner').style.display = 'none';
       document.getElementById('modal-msg').innerText = msg;
       document.getElementById('login-form').style.display = 'none';
     }
