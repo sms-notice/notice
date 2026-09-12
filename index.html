@@ -58,7 +58,7 @@
       position: relative; z-index: 10;
     }
 
-    /* 워터마크 확대 적용 (22px 크기, 두껍게) */
+    /* 워터마크 레이어 */
     #watermark-layer {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       pointer-events: none; z-index: 999; overflow: hidden;
@@ -67,11 +67,11 @@
     }
 
     .wm-item {
-      transform: rotate(-20deg);
-      font-size: 24px;
+      transform: rotate(-30deg);
+      font-size: 22px;
       font-weight: 800;
       color: #000;
-      padding: 10px;
+      padding: 5px
       white-space: nowrap;
     }
   </style>
@@ -82,7 +82,7 @@
   <div id="overlay">
     <div class="box" id="modal-box">
       <h2 id="modal-title">보안 검증 중...</h2>
-      <p id="modal-msg">접속 권한을 확인하고 있습니다.</p>
+      <p id="modal-msg">접속 환경을 확인하고 있습니다.</p>
       <div id="login-form" style="display:none;">
         <input type="text" id="nickname-input" placeholder="카카오톡 닉네임 입력" autocomplete="off">
         <button onclick="accessNotice()">입장하기</button>
@@ -107,25 +107,40 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycby379jxojIDcMVkSFcgTDX5iQxtqD0kd45litiB5XEimTcYWTq99aqLF415RC_eZa3l/exec"; // 구글 앱스 스크립트 웹 앱 URL 입력
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // 구글 앱스 스크립트 웹 앱 URL 입력
     let userIP = 'IP 조회 실패';
     let assignedToken = '';
 
+    // 모바일/태블릿 접속 여부 판별 함수
+    function isMobileDevice() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      
+      // User-Agent 확인 또는 화면 너비가 1024px 이하인지 체크
+      return mobileRegex.test(userAgent) || window.innerWidth <= 1024;
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. IP 수집
+      // 1. PC 접속 차단 검사
+      if (!isMobileDevice()) {
+        showError('📱 모바일 전용', '보안 정책상 PC에서는 접속하실 수 없습니다. 모바일 기기로 접근해 주세요.');
+        return; // PC 접속 시 토큰 수령 절차 차단
+      }
+
+      // 2. IP 수집
       try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipRes.json();
         userIP = ipData.ip;
       } catch (e) { userIP = 'IP 미확인'; }
 
-      // 2. 서버에 남아있는 1회용 토큰 하나 요청하여 발급받기
+      // 3. 서버에 남아있는 1회용 토큰 요청
       try {
         const tokenRes = await fetch(GAS_URL);
         const tokenData = await tokenRes.json();
 
         if (tokenData.status === 'valid') {
-          assignedToken = tokenData.token; // 고유 토큰 확보
+          assignedToken = tokenData.token;
           document.getElementById('modal-title').innerText = '공지사항 열람';
           document.getElementById('modal-msg').innerText = '카카오톡 닉네임을 입력해 주세요.';
           document.getElementById('login-form').style.display = 'block';
@@ -139,7 +154,7 @@
       }
     });
 
-    // 3. 입장 클릭 시 워터마크 생성 및 서버에 닉네임+IP+발급토큰 최종 저장
+    // 4. 입장 클릭 시 워터마크 생성 및 데이터 전송
     async function accessNotice() {
       const nickname = document.getElementById('nickname-input').value.trim();
       if (!nickname) {
@@ -163,7 +178,7 @@
         wmContainer.appendChild(div);
       }
 
-      // 구글 시트에 [시간 | 닉네임 | IP | 할당받았던 토큰] 기록 전송
+      // 구글 시트에 기록 전송
       fetch(GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
