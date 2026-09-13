@@ -95,6 +95,19 @@
       100% { transform: rotate(360deg); }
     }
 
+.loading-spinner-small {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+  
+
     /* 동적 워터마크 레이어 */
 
     #watermark-layer {
@@ -515,19 +528,22 @@
       }
     });
 
-    async function accessNotice() {
-      const nicknameInput = document.getElementById('nickname-input');
-      const nickname = nicknameInput.value.trim();
+async function accessNotice() {
+  const nicknameInput = document.getElementById('nickname-input');
+  const nickname = nicknameInput.value.trim();
 
-      if (!nickname) {
-        alert('닉네임을 입력해 주세요.');
-        return;
-      }
+  if (!nickname) {
+    alert('닉네임을 입력해 주세요.');
+    return;
+  }
 
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = true;
-      btn.innerText = '검증 중...';
-
+  const btn = document.getElementById('submit-btn');
+  const msgEl = document.getElementById('modal-msg');
+  
+  btn.disabled = true;
+  // 버튼 안에 빙글빙글 도는 스피너와 텍스트를 함께 노출
+  btn.innerHTML = '<span class="loading-spinner-small"></span>확인중';
+  msgEl.innerText = '서버에서 명단을 확인하고 있습니다. 잠시만 기다려 주세요.';
       try {
         const response = await fetch(GAS_URL, {
           method: 'POST',
